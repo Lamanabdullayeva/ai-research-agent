@@ -4,33 +4,49 @@ A full-stack AI agentic application that autonomously researches any topic using
 
 ## Tech Stack
 
-**Frontend:** Angular (with Signals, SSE streaming)  
-**Backend:** Python + FastAPI  
-**AI Model:** Llama 3.1 via Groq API  
-**Web Search:** Tavily API  
+**Frontend:** Angular 19 (Signals, standalone components, SSE streaming)
+**Backend:** Python + FastAPI
+**AI Model:** Llama 3.1 via Groq API
+**Web Search:** Tavily API
+**Font:** Inter
+
+## Features
+
+- Real-time agent activity timeline — watch the AI think and search live
+- Structured research report with Summary, Key Findings, and Conclusion
+- Download report as PDF
+- Copy report to clipboard
+- Research history saved in localStorage
+- Stop button to cancel mid-search
+- Auto-cancel after 60 seconds
+- Apple-inspired dark UI
 
 ## How It Works
 
-1. User enters a research topic in the Angular UI
-2. The Angular app sends a request to the FastAPI backend
+1. User enters a research topic
+2. The Angular app sends a request to the FastAPI backend via SSE
 3. The backend runs an **agentic loop**:
    - The AI model decides what to search
    - Tavily searches the web and returns results
-   - The model reads results and decides if it needs more searches
-   - Loop repeats until the model has enough information
-4. The model writes a structured report (Summary, Key Findings, Conclusion)
-5. Every step streams back to the UI in real time via **Server-Sent Events (SSE)**
+   - Repeats up to 3 searches
+4. The model writes a structured report
+5. Every step streams to the UI in real time
 
 ## Project Structure
 
 ```
 ai-research-agent/
 ├── backend/
-│   ├── main.py        # FastAPI server + SSE endpoint
-│   ├── agent.py       # Agentic loop with tool use
-│   ├── .env           # API keys (not committed)
-│   └── requirements.txt
-└── frontend/          # Angular app (coming soon)
+│   ├── main.py            # FastAPI server + SSE endpoint
+│   ├── agent.py           # Async agentic loop with tool use
+│   ├── requirements.txt
+│   └── .env               # API keys (not committed)
+└── frontend/
+    └── src/app/
+        ├── app.ts          # Main component with Angular Signals
+        ├── app.html        # Template
+        ├── app.scss        # Apple-style dark UI
+        └── research.service.ts  # SSE streaming service
 ```
 
 ## Backend Setup
@@ -53,11 +69,21 @@ Run the server:
 uvicorn main:app --reload
 ```
 
+## Frontend Setup
+
+```bash
+cd frontend
+npm install
+npm start
+```
+
+Open [http://localhost:4200](http://localhost:4200)
+
 ## API
 
 **POST** `/research`
 
-Request body:
+Request:
 ```json
 { "topic": "latest AI trends 2025" }
 ```
@@ -73,7 +99,8 @@ data: [DONE]
 
 ## Key Concepts (for interviews)
 
-- **Agentic loop**: The AI doesn't answer in one shot — it thinks, searches, reads, and repeats until confident
-- **Tool use / Function calling**: The model decides when and how to call external tools (web search)
-- **SSE streaming**: Results are pushed to the frontend in real time as the agent works
-- **FastAPI**: Lightweight Python web framework, similar to Express in Node.js
+- **Agentic loop** — the AI thinks, searches, reads, and repeats until it has enough information
+- **Tool use / Function calling** — the model decides when and how to call external tools
+- **SSE streaming** — results push to the frontend in real time as the agent works
+- **Angular Signals** — reactive state management using Angular's modern primitives
+- **Async FastAPI** — non-blocking backend that handles cancellation gracefully

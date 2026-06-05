@@ -1,0 +1,110 @@
+<div class="app">
+  <header>
+    <p class="eyebrow">AI Research Agent</p>
+    <h1>What do you want to explore today?</h1>
+  </header>
+
+  <main>
+    <!-- Search Input -->
+    <div class="search-box">
+      <input
+        type="text"
+        [ngModel]="topic()"
+        (ngModelChange)="topic.set($event)"
+        placeholder="Enter a topic to research..."
+        (keyup.enter)="startResearch()"
+        [disabled]="isLoading()"
+      />
+      @if (topic() || events().length > 0 || finalReport()) {
+        <button class="clear-btn" (click)="clearAll()" title="Clear">&#x2715;</button>
+      }
+      @if (isLoading()) {
+        <button class="stop-btn" (click)="stopResearch()">Stop</button>
+      } @else {
+        <button (click)="startResearch()" [disabled]="!topic().trim()">Research</button>
+      }
+    </div>
+
+    <!-- Two column layout — always shown -->
+    <div class="columns">
+
+      <!-- Left: Agent Activity + Actions + History -->
+      <div class="left-col">
+
+        @if (events().length > 0 || isLoading()) {
+          <div class="trace-panel">
+            <p class="section-label">Agent Activity</p>
+            @for (event of events(); track $index) {
+              <div class="event" [ngClass]="event.type">
+                @if (event.type === 'status') {
+                  <span class="dot status"></span>
+                  <span>{{ event.message }}</span>
+                }
+                @if (event.type === 'tool_call') {
+                  <span class="dot search"></span>
+                  <span>Searching <strong>{{ event.query }}</strong></span>
+                }
+                @if (event.type === 'tool_result') {
+                  <span class="dot result"></span>
+                  <span>Retrieved results for <em>{{ event.query }}</em></span>
+                }
+              </div>
+            }
+            @if (isLoading()) {
+              <div class="event thinking">
+                <span class="dot pulse"></span>
+                <span>Thinking...</span>
+              </div>
+            }
+            @if (toolCallCount() > 0 && !isLoading()) {
+              <p class="stats">{{ toolCallCount() }} searches completed</p>
+            }
+          </div>
+        }
+
+        @if (finalReport()) {
+          <div class="actions">
+            <button class="action-btn" (click)="copyReport()">
+              {{ copied() ? 'Copied' : 'Copy Report' }}
+            </button>
+            <button class="action-btn primary" (click)="downloadPDF()">
+              Download PDF
+            </button>
+          </div>
+        }
+
+        <!-- History — always visible -->
+        <div class="history-panel">
+          <div class="history-header">
+            <p class="section-label">Recent Searches</p>
+            <button class="clear-history-btn" (click)="clearHistory()" [disabled]="history().length === 0">
+              Clear
+            </button>
+          </div>
+          <div class="history-items">
+            @for (item of history(); track $index) {
+              <div class="history-item" (click)="loadFromHistory(item)">
+                <span class="history-topic">{{ item.topic }}</span>
+                <span class="history-date">{{ item.date }}</span>
+              </div>
+            } @empty {
+              <p class="history-empty">No searches yet</p>
+            }
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Right: Research Report -->
+      <div class="report" [class.report--filled]="!!finalReport()">
+        <p class="section-label">Research Report</p>
+        @if (finalReport()) {
+          <div class="report-content">{{ finalReport() }}</div>
+        } @else {
+          <p class="report-placeholder">Report will appear here once the agent finishes researching.</p>
+        }
+      </div>
+
+    </div>
+  </main>
+</div>
