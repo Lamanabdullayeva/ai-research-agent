@@ -1,0 +1,24 @@
+{
+  "name": "ai-research-agent",
+  "version": "1.0.0",
+  "description": "A full-stack AI agentic application that autonomously researches any topic using web search and produces a structured report — streamed in real time.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Lamanabdullayeva/ai-research-agent.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/Lamanabdullayeva/ai-research-agent/issues"
+  },
+  "homepage": "https://github.com/Lamanabdullayeva/ai-research-agent#readme",
+  "devDependencies": {
+    "@types/jasmine": "^6.0.0"
+  }
+}
