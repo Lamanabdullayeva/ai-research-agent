@@ -1,4 +1,4 @@
-import { Component, signal, computed, inject, OnInit } from '@angular/core';
+import { Component, signal, computed, inject, OnInit, WritableSignal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { ResearchService, AgentEvent } from './research.service';
 import jsPDF from 'jspdf';
@@ -18,14 +18,14 @@ const HISTORY_KEY = 'research_history';
   styleUrl: './app.scss'
 })
 export class App implements OnInit {
+  
   private researchService = inject(ResearchService);
-
-  topic = signal('');
-  isLoading = signal(false);
-  events = signal<AgentEvent[]>([]);
-  finalReport = signal<string | null>(null);
-  copied = signal(false);
-  history = signal<HistoryItem[]>([]);
+  public topic: WritableSignal<string> = signal('');
+  public isLoading: WritableSignal<boolean> = signal(false);
+  public events: WritableSignal<AgentEvent[]> = signal<AgentEvent[]>([]);
+  public finalReport: WritableSignal<string | null> = signal<string | null>(null);
+  public copied: WritableSignal<boolean> = signal(false);
+  public history: WritableSignal<HistoryItem[]> = signal<HistoryItem[]>([]);
   private abortController: AbortController | null = null;
   private searchTimeout: ReturnType<typeof setTimeout> | null = null;
 
@@ -80,7 +80,7 @@ export class App implements OnInit {
     this.searchTimeout = setTimeout(() => this.stopResearch(), 60000);
 
     this.researchService.research(this.topic(), this.abortController.signal).subscribe({
-      next: (event) => {
+      next: (event: AgentEvent) => {
         if (event.type === 'final_report') {
           this.finalReport.set(event.content || '');
           this.saveToHistory(this.topic(), event.content || '');
