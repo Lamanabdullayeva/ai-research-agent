@@ -1,6 +1,5 @@
 import { Component, signal, computed, inject, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { CommonModule } from '@angular/common';
 import { ResearchService, AgentEvent } from './research.service';
 import jsPDF from 'jspdf';
 
@@ -14,7 +13,7 @@ const HISTORY_KEY = 'research_history';
 
 @Component({
   selector: 'app-root',
-  imports: [FormsModule, CommonModule],
+  imports: [FormsModule],
   templateUrl: './app.html',
   styleUrl: './app.scss'
 })
@@ -30,9 +29,28 @@ export class App implements OnInit {
   private abortController: AbortController | null = null;
   private searchTimeout: ReturnType<typeof setTimeout> | null = null;
 
+  // Derived state — all conditional logic lives here, not in the template
   toolCallCount = computed(() =>
     this.events().filter(e => e.type === 'tool_call').length
   );
+
+  showClearButton = computed(() =>
+    !!(this.topic() || this.events().length > 0 || this.finalReport())
+  );
+
+  showAgentActivity = computed(() =>
+    this.events().length > 0 || this.isLoading()
+  );
+
+  showSearchStats = computed(() =>
+    this.toolCallCount() > 0 && !this.isLoading()
+  );
+
+  showReportActions = computed(() => !!this.finalReport());
+
+  hasReport = computed(() => !!this.finalReport());
+
+  hasHistory = computed(() => this.history().length > 0);
 
   ngOnInit() {
     const saved = localStorage.getItem(HISTORY_KEY);
@@ -66,6 +84,9 @@ export class App implements OnInit {
         if (event.type === 'final_report') {
           this.finalReport.set(event.content || '');
           this.saveToHistory(this.topic(), event.content || '');
+        } else if (event.type === 'error') {
+          this.events.update(prev => [...prev, event]);
+          this.stopResearch();
         } else {
           this.events.update(prev => [...prev, event]);
         }

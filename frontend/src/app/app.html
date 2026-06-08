@@ -15,7 +15,7 @@
         (keyup.enter)="startResearch()"
         [disabled]="isLoading()"
       />
-      @if (topic() || events().length > 0 || finalReport()) {
+      @if (showClearButton()) {
         <button class="clear-btn" (click)="clearAll()" title="Clear">&#x2715;</button>
       }
       @if (isLoading()) {
@@ -25,13 +25,13 @@
       }
     </div>
 
-    <!-- Two column layout — always shown -->
+    <!-- Two column layout -->
     <div class="columns">
 
       <!-- Left: Agent Activity + Actions + History -->
       <div class="left-col">
 
-        @if (events().length > 0 || isLoading()) {
+        @if (showAgentActivity()) {
           <div class="trace-panel">
             <p class="section-label">Agent Activity</p>
             @for (event of events(); track $index) {
@@ -48,6 +48,10 @@
                   <span class="dot result"></span>
                   <span>Retrieved results for <em>{{ event.query }}</em></span>
                 }
+                @if (event.type === 'error') {
+                  <span class="dot error"></span>
+                  <span>{{ event.message }}</span>
+                }
               </div>
             }
             @if (isLoading()) {
@@ -56,13 +60,13 @@
                 <span>Thinking...</span>
               </div>
             }
-            @if (toolCallCount() > 0 && !isLoading()) {
+            @if (showSearchStats()) {
               <p class="stats">{{ toolCallCount() }} searches completed</p>
             }
           </div>
         }
 
-        @if (finalReport()) {
+        @if (showReportActions()) {
           <div class="actions">
             <button class="action-btn" (click)="copyReport()">
               {{ copied() ? 'Copied' : 'Copy Report' }}
@@ -77,7 +81,7 @@
         <div class="history-panel">
           <div class="history-header">
             <p class="section-label">Recent Searches</p>
-            <button class="clear-history-btn" (click)="clearHistory()" [disabled]="history().length === 0">
+            <button class="clear-history-btn" (click)="clearHistory()" [disabled]="!hasHistory()">
               Clear
             </button>
           </div>
@@ -96,9 +100,9 @@
       </div>
 
       <!-- Right: Research Report -->
-      <div class="report" [class.report--filled]="!!finalReport()">
+      <div class="report" [class.report--filled]="hasReport()">
         <p class="section-label">Research Report</p>
-        @if (finalReport()) {
+        @if (hasReport()) {
           <div class="report-content">{{ finalReport() }}</div>
         } @else {
           <p class="report-placeholder">Report will appear here once the agent finishes researching.</p>

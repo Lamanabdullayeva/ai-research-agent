@@ -212,6 +212,7 @@ main {
       &.status { background: #0a84ff; }
       &.search { background: #ff9f0a; }
       &.result { background: #30d158; }
+      &.error  { background: #ff453a; }
       &.pulse {
         background: #636366;
         animation: pulse 1.2s ease-in-out infinite;
