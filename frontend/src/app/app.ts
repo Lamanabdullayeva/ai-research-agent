@@ -1,13 +1,8 @@
 import { Component, signal, computed, inject, OnInit, WritableSignal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { ResearchService, AgentEvent } from './research.service';
+import { ResearchService, AgentEvent } from './services/research.service';
 import jsPDF from 'jspdf';
-
-export interface HistoryItem {
-  topic: string;
-  report: string;
-  date: string;
-}
+import { HistoryItem } from './interfaces/history-item';
 
 const HISTORY_KEY = 'research_history';
 
@@ -18,7 +13,6 @@ const HISTORY_KEY = 'research_history';
   styleUrl: './app.scss'
 })
 export class App implements OnInit {
-  
   private researchService = inject(ResearchService);
   public topic: WritableSignal<string> = signal('');
   public isLoading: WritableSignal<boolean> = signal(false);
