@@ -1,4 +1,4 @@
-import { Component, input, output } from '@angular/core';
+import { Component, input, InputSignal, output } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 
 @Component({
@@ -8,9 +8,9 @@ import { FormsModule } from '@angular/forms';
   styleUrl: './search-box.component.scss'
 })
 export class SearchBoxComponent {
-  topic = input.required<string>();
-  isLoading = input.required<boolean>();
-  showClearButton = input.required<boolean>();
+  topic: InputSignal<string> = input.required<string>();
+  isLoading: InputSignal<boolean> = input.required<boolean>();
+  showClearButton: InputSignal<boolean> = input.required<boolean>();
 
   topicChange = output<string>();
   onResearch = output<void>();

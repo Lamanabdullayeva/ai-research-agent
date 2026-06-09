@@ -1,5 +1,5 @@
 import { Pipe, PipeTransform } from '@angular/core';
-import { AgentEvent } from '../research.service';
+import { AgentEvent } from '../services/research.service';
 
 @Pipe({
   name: 'eventLabel',

@@ -1,4 +1,4 @@
-import { Component, input, output } from '@angular/core';
+import { Component, input, InputSignal, output } from '@angular/core';
 
 @Component({
   selector: 'app-report-panel',
@@ -7,9 +7,9 @@ import { Component, input, output } from '@angular/core';
   styleUrl: './report-panel.component.scss'
 })
 export class ReportPanelComponent {
-  report = input<string | null>(null);
-  hasReport = input.required<boolean>();
-  copied = input.required<boolean>();
+  report: InputSignal<string | null> = input<string | null>(null);
+  hasReport: InputSignal<boolean> = input.required<boolean>();
+  copied: InputSignal<boolean> = input.required<boolean>();
 
   onCopy = output<void>();
   onDownloadPdf = output<void>();

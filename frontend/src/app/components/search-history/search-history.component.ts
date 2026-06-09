@@ -1,4 +1,4 @@
-import { Component, input, output } from '@angular/core';
+import { Component, input, output, InputSignal } from '@angular/core';
 import { DatePipe } from '@angular/common';
 import { HistoryItem } from '../../interfaces/history-item';
 
@@ -9,8 +9,8 @@ import { HistoryItem } from '../../interfaces/history-item';
   styleUrl: './search-history.component.scss'
 })
 export class SearchHistoryComponent {
-  history = input.required<HistoryItem[]>();
-  hasHistory = input.required<boolean>();
+  history: InputSignal<HistoryItem[]> = input.required<HistoryItem[]>();
+  hasHistory: InputSignal<boolean> = input.required<boolean>();
 
   onSelect = output<HistoryItem>();
   onClear = output<void>();
