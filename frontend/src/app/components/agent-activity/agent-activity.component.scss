@@ -11,6 +11,52 @@
   &::-webkit-scrollbar-track { background: transparent; }
   &::-webkit-scrollbar-thumb { background: #3a3a3c; border-radius: 4px; }
 
+  .panel-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 0.2rem;
+
+    .section-label { margin-bottom: 0; }
+  }
+
+  .search-progress {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    flex-shrink: 0;
+    margin-bottom: 0.9rem;
+
+    .progress-label {
+      font-size: 0.72rem;
+      font-weight: 500;
+      color: #636366;
+      white-space: nowrap;
+    }
+
+    .progress-steps {
+      display: flex;
+      gap: 4px;
+
+      .progress-step {
+        width: 28px;
+        height: 4px;
+        border-radius: 2px;
+        background: #2c2c2e;
+        transition: background 0.3s ease;
+
+        &.filled {
+          background: #ff9f0a;
+        }
+
+        &.active {
+          background: #ff9f0a;
+          animation: step-pulse 1s ease-in-out infinite;
+        }
+      }
+    }
+  }
+
   .event {
     display: flex;
     align-items: flex-start;
@@ -20,6 +66,7 @@
     color: #aeaeb2;
     line-height: 1.5;
     position: relative;
+    animation: fadeSlideIn 0.35s ease forwards;
 
     &:not(:last-child)::after {
       content: '';
@@ -60,7 +107,23 @@
   border-top: 1px solid #2c2c2e;
 }
 
+@keyframes fadeSlideIn {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
 @keyframes pulse {
   0%, 100% { opacity: 1; transform: scale(1); }
   50%       { opacity: 0.3; transform: scale(0.75); }
+}
+
+@keyframes step-pulse {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0.4; }
 }

@@ -1,12 +1,16 @@
 <div class="report" [class.report--filled]="hasReport()">
   <p class="section-label">{{ sectionTitle }}</p>
   @if (hasReport()) {
-    <div class="report-content">{{ report() }}</div>
+    @if (isTyping()) {
+      <div class="report-content typing">{{ displayedText() }}<span class="cursor">|</span></div>
+    } @else {
+      <div class="report-content" [innerHTML]="report() | markdown"></div>
+    }
     <div class="actions">
-      <button class="action-btn" (click)="onCopy.emit()">
+      <button class="action-btn" (click)="onCopy.emit()" [disabled]="isTyping()">
         {{ copied() ? btnCopied : btnCopy }}
       </button>
-      <button class="action-btn primary" (click)="onDownloadPdf.emit()">
+      <button class="action-btn primary" (click)="onDownloadPdf.emit()" [disabled]="isTyping()">
         {{ btnDownload }}
       </button>
     </div>

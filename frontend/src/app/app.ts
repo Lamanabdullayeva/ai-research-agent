@@ -9,6 +9,7 @@ import jsPDF from 'jspdf';
 import {
   HISTORY_KEY,
   MAX_HISTORY_ITEMS,
+  MAX_SEARCHES,
   RESEARCH_TIMEOUT_MS,
   COPIED_RESET_MS,
   LABEL_EYEBROW,
@@ -36,6 +37,7 @@ export class App implements OnInit {
 
   protected readonly eyebrow: string = LABEL_EYEBROW;
   protected readonly heading: string = LABEL_HEADING;
+  protected readonly maxSearches: number = MAX_SEARCHES;
 
   // Derived state — all conditional logic lives here, not in the template
   toolCallCount: Signal<number> = computed(() =>
@@ -52,6 +54,10 @@ export class App implements OnInit {
 
   showSearchStats: Signal<boolean> = computed(() =>
     this.toolCallCount() > 0 && !this.isLoading()
+  );
+
+  showThinking: Signal<boolean> = computed(() =>
+    this.isLoading() && this.toolCallCount() < MAX_SEARCHES
   );
 
   hasReport: Signal<boolean> = computed(() => !!this.finalReport());

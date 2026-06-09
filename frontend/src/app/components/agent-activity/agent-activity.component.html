@@ -1,5 +1,24 @@
 <div class="trace-panel">
-  <p class="section-label">{{ sectionTitle }}</p>
+  <div class="panel-header">
+    <p class="section-label">{{ sectionTitle }}</p>
+    @if (showProgress()) {
+      <div class="search-progress">
+        <span class="progress-label">
+          Search {{ toolCallCount() }} {{ searchOf }} {{ maxSearches() }}
+        </span>
+        <div class="progress-steps">
+          @for (step of searchSteps(); track step) {
+            <div
+              class="progress-step"
+              [class.filled]="toolCallCount() >= step"
+              [class.active]="toolCallCount() === step && isLoading()"
+            ></div>
+          }
+        </div>
+      </div>
+    }
+  </div>
+
   @for (event of events(); track $index) {
     <div class="event">
       <span class="dot" [ngClass]="event.type | eventDotClass"></span>

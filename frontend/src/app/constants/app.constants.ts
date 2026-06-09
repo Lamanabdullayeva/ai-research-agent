@@ -2,6 +2,9 @@
 export const HISTORY_KEY: string = 'research_history';
 export const MAX_HISTORY_ITEMS: number = 10;
 
+// Agent
+export const MAX_SEARCHES: number = 3;
+
 // API
 export const API_URL: string = 'http://127.0.0.1:8000/research';
 
@@ -23,6 +26,7 @@ export const LABEL_BTN_CLEAR: string = 'Clear';
 export const LABEL_SECTION_ACTIVITY: string = 'Agent Activity';
 export const LABEL_THINKING: string = 'Thinking...';
 export const LABEL_SEARCHES_COMPLETED: string = 'searches completed';
+export const LABEL_SEARCH_OF: string = 'of';
 
 // UI Labels — Event messages
 export const LABEL_EVENT_SEARCHING: string = 'Searching:';

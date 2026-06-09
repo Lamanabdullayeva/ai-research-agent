@@ -1,4 +1,4 @@
-import { Component, input, InputSignal } from '@angular/core';
+import { Component, computed, input, InputSignal, Signal } from '@angular/core';
 import { NgClass } from '@angular/common';
 import { AgentEvent } from '../../services/research.service';
 import { EventDotClassPipe } from '../../pipes/event-dot-class.pipe';
@@ -7,6 +7,7 @@ import {
   LABEL_SECTION_ACTIVITY,
   LABEL_THINKING,
   LABEL_SEARCHES_COMPLETED,
+  LABEL_SEARCH_OF,
 } from '../../constants/app.constants';
 
 @Component({
@@ -20,8 +21,19 @@ export class AgentActivityComponent {
   isLoading: InputSignal<boolean> = input.required<boolean>();
   toolCallCount: InputSignal<number> = input.required<number>();
   showSearchStats: InputSignal<boolean> = input.required<boolean>();
+  maxSearches: InputSignal<number> = input.required<number>();
+
+  // Array of step numbers [1, 2, 3] derived from maxSearches
+  searchSteps: Signal<number[]> = computed(() =>
+    Array.from({ length: this.maxSearches() }, (_, i) => i + 1)
+  );
+
+  showProgress: Signal<boolean> = computed(() =>
+    this.isLoading() || this.toolCallCount() > 0
+  );
 
   protected readonly sectionTitle: string = LABEL_SECTION_ACTIVITY;
   protected readonly thinkingLabel: string = LABEL_THINKING;
   protected readonly searchesCompleted: string = LABEL_SEARCHES_COMPLETED;
+  protected readonly searchOf: string = LABEL_SEARCH_OF;
 }

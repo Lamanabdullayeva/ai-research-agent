@@ -21,9 +21,10 @@
         @if (showAgentActivity()) {
           <app-agent-activity
             [events]="events()"
-            [isLoading]="isLoading()"
+            [isLoading]="showThinking()"
             [toolCallCount]="toolCallCount()"
             [showSearchStats]="showSearchStats()"
+            [maxSearches]="maxSearches"
           />
         }
 
