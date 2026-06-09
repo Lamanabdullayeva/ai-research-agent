@@ -1,0 +1,18 @@
+<div class="trace-panel">
+  <p class="section-label">Agent Activity</p>
+  @for (event of events(); track $index) {
+    <div class="event">
+      <span class="dot" [ngClass]="event.type | eventDotClass"></span>
+      <span>{{ event | eventLabel }}</span>
+    </div>
+  }
+  @if (isLoading()) {
+    <div class="event">
+      <span class="dot pulse"></span>
+      <span>Thinking...</span>
+    </div>
+  }
+  @if (showSearchStats()) {
+    <p class="stats">{{ toolCallCount() }} searches completed</p>
+  }
+</div>

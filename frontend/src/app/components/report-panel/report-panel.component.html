@@ -1,0 +1,16 @@
+<div class="report" [class.report--filled]="hasReport()">
+  <p class="section-label">Research Report</p>
+  @if (hasReport()) {
+    <div class="report-content">{{ report() }}</div>
+    <div class="actions">
+      <button class="action-btn" (click)="onCopy.emit()">
+        {{ copied() ? 'Copied' : 'Copy Report' }}
+      </button>
+      <button class="action-btn primary" (click)="onDownloadPdf.emit()">
+        Download PDF
+      </button>
+    </div>
+  } @else {
+    <p class="report-placeholder">Report will appear here once the agent finishes researching.</p>
+  }
+</div>

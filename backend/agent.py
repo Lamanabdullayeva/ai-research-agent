@@ -58,67 +58,77 @@ async def run_research_agent(topic: str) -> AsyncGenerator[dict, None]:
     max_searches = 3
     search_count = 0
 
-    for iteration in range(10):
-        response = await groq_client.chat.completions.create(
-            model="llama-3.1-8b-instant",
-            messages=messages,
-            tools=TOOLS,
-            tool_choice="auto",
-            max_tokens=4096
-        )
+    try:
+        for iteration in range(10):
+            # Force tool use until we've done at least one search
+            tool_choice = "required" if search_count == 0 else "auto"
 
-        message = response.choices[0].message
+            response = await groq_client.chat.completions.create(
+                model="llama-3.1-8b-instant",
+                messages=messages,
+                tools=TOOLS,
+                tool_choice=tool_choice,
+                max_tokens=4096
+            )
 
-        if message.tool_calls:
-            messages.append({
-                "role": "assistant",
-                "content": message.content or "",
-                "tool_calls": [
-                    {
-                        "id": tc.id,
-                        "type": "function",
-                        "function": {
-                            "name": tc.function.name,
-                            "arguments": tc.function.arguments
+            message = response.choices[0].message
+
+            if message.tool_calls:
+                messages.append({
+                    "role": "assistant",
+                    "content": message.content or "",
+                    "tool_calls": [
+                        {
+                            "id": tc.id,
+                            "type": "function",
+                            "function": {
+                                "name": tc.function.name,
+                                "arguments": tc.function.arguments
+                            }
                         }
-                    }
-                    for tc in message.tool_calls
-                ]
-            })
-
-            for tool_call in message.tool_calls:
-                args = json.loads(tool_call.function.arguments)
-                query = args.get("query", "")
-
-                search_count += 1
-                yield {"type": "tool_call", "tool": "web_search", "query": query}
-
-                result = await web_search(query)
-
-                yield {"type": "tool_result", "query": query, "result_preview": result[:200]}
-
-                messages.append({
-                    "role": "tool",
-                    "tool_call_id": tool_call.id,
-                    "name": tool_call.function.name,
-                    "content": result
+                        for tc in message.tool_calls
+                    ]
                 })
 
-            if search_count >= max_searches:
-                messages.append({
-                    "role": "user",
-                    "content": "You have completed enough searches. Now write the final research report."
-                })
-                final_response = await groq_client.chat.completions.create(
-                    model="llama-3.1-8b-instant",
-                    messages=messages,
-                    max_tokens=4096
-                )
-                yield {"type": "final_report", "content": final_response.choices[0].message.content}
+                for tool_call in message.tool_calls:
+                    if search_count >= max_searches:
+                        break
+
+                    args = json.loads(tool_call.function.arguments)
+                    query = args.get("query", "")
+
+                    search_count += 1
+                    yield {"type": "tool_call", "tool": "web_search", "query": query}
+
+                    result = await web_search(query)
+
+                    yield {"type": "tool_result", "query": query, "result_preview": result[:200]}
+
+                    messages.append({
+                        "role": "tool",
+                        "tool_call_id": tool_call.id,
+                        "name": tool_call.function.name,
+                        "content": result
+                    })
+
+                if search_count >= max_searches:
+                    messages.append({
+                        "role": "user",
+                        "content": "You have completed enough searches. Now write the final research report."
+                    })
+                    final_response = await groq_client.chat.completions.create(
+                        model="llama-3.1-8b-instant",
+                        messages=messages,
+                        max_tokens=4096
+                    )
+                    yield {"type": "final_report", "content": final_response.choices[0].message.content}
+                    return
+
+            else:
+                yield {"type": "final_report", "content": message.content}
                 return
 
-        else:
-            yield {"type": "final_report", "content": message.content}
-            return
+        yield {"type": "error", "message": "Agent reached maximum iterations without a final answer."}
 
-    yield {"type": "error", "message": "Agent reached maximum iterations without a final answer."}
+    except Exception as e:
+        yield {"type": "error", "message": f"Agent error: {str(e)}"}

@@ -1,73 +1,72 @@
-import { Component, signal, computed, inject, OnInit } from '@angular/core';
-import { FormsModule } from '@angular/forms';
-import { ResearchService, AgentEvent } from './research.service';
+import { Component, Signal, WritableSignal, signal, computed, inject, OnInit } from '@angular/core';
+import { AgentEvent, ResearchService } from './services/research.service';
+import { HistoryItem } from './interfaces/history-item';
+import { SearchBoxComponent } from './components/search-box/search-box.component';
+import { AgentActivityComponent } from './components/agent-activity/agent-activity.component';
+import { ReportPanelComponent } from './components/report-panel/report-panel.component';
+import { SearchHistoryComponent } from './components/search-history/search-history.component';
 import jsPDF from 'jspdf';
 
-export interface HistoryItem {
-  topic: string;
-  report: string;
-  date: string;
-}
-
-const HISTORY_KEY = 'research_history';
+const HISTORY_KEY: string = 'research_history';
 
 @Component({
   selector: 'app-root',
-  imports: [FormsModule],
+  imports: [SearchBoxComponent, AgentActivityComponent, ReportPanelComponent, SearchHistoryComponent],
   templateUrl: './app.html',
   styleUrl: './app.scss'
 })
 export class App implements OnInit {
-  private researchService = inject(ResearchService);
+  private researchService: ResearchService = inject(ResearchService);
 
-  topic = signal('');
-  isLoading = signal(false);
-  events = signal<AgentEvent[]>([]);
-  finalReport = signal<string | null>(null);
-  copied = signal(false);
-  history = signal<HistoryItem[]>([]);
+  topic: WritableSignal<string> = signal('');
+  isLoading: WritableSignal<boolean> = signal(false);
+  events: WritableSignal<AgentEvent[]> = signal<AgentEvent[]>([]);
+  finalReport: WritableSignal<string | null> = signal<string | null>(null);
+  copied: WritableSignal<boolean> = signal(false);
+  history: WritableSignal<HistoryItem[]> = signal<HistoryItem[]>([]);
+
   private abortController: AbortController | null = null;
   private searchTimeout: ReturnType<typeof setTimeout> | null = null;
 
   // Derived state — all conditional logic lives here, not in the template
-  toolCallCount = computed(() =>
-    this.events().filter(e => e.type === 'tool_call').length
+  toolCallCount: Signal<number> = computed(() =>
+    this.events().filter((e: AgentEvent) => e.type === 'tool_call').length
   );
 
-  showClearButton = computed(() =>
+  showClearButton: Signal<boolean> = computed(() =>
     !!(this.topic() || this.events().length > 0 || this.finalReport())
   );
 
-  showAgentActivity = computed(() =>
+  showAgentActivity: Signal<boolean> = computed(() =>
     this.events().length > 0 || this.isLoading()
   );
 
-  showSearchStats = computed(() =>
+  showSearchStats: Signal<boolean> = computed(() =>
     this.toolCallCount() > 0 && !this.isLoading()
   );
 
-  showReportActions = computed(() => !!this.finalReport());
+  hasReport: Signal<boolean> = computed(() => !!this.finalReport());
 
-  hasReport = computed(() => !!this.finalReport());
+  hasHistory: Signal<boolean> = computed(() => this.history().length > 0);
 
-  hasHistory = computed(() => this.history().length > 0);
-
-  ngOnInit() {
-    const saved = localStorage.getItem(HISTORY_KEY);
-    if (saved) this.history.set(JSON.parse(saved));
+  ngOnInit(): void {
+    const saved: string | null = localStorage.getItem(HISTORY_KEY);
+    if (saved) this.history.set(JSON.parse(saved) as HistoryItem[]);
   }
 
-  stopResearch() {
-    if (this.searchTimeout) { clearTimeout(this.searchTimeout); this.searchTimeout = null; }
+  stopResearch(): void {
+    if (this.searchTimeout) {
+      clearTimeout(this.searchTimeout);
+      this.searchTimeout = null;
+    }
     this.abortController?.abort();
     this.abortController = null;
     this.isLoading.set(false);
   }
 
-  startResearch() {
+  startResearch(): void {
     if (!this.topic().trim()) return;
 
-    // Cancel any ongoing request first
     this.stopResearch();
 
     this.abortController = new AbortController();
@@ -76,22 +75,21 @@ export class App implements OnInit {
     this.finalReport.set(null);
     this.copied.set(false);
 
-    // Auto-stop after 60 seconds
     this.searchTimeout = setTimeout(() => this.stopResearch(), 60000);
 
     this.researchService.research(this.topic(), this.abortController.signal).subscribe({
-      next: (event) => {
+      next: (event: AgentEvent) => {
         if (event.type === 'final_report') {
-          this.finalReport.set(event.content || '');
-          this.saveToHistory(this.topic(), event.content || '');
+          this.finalReport.set(event.content ?? '');
+          this.saveToHistory(this.topic(), event.content ?? '');
         } else if (event.type === 'error') {
-          this.events.update(prev => [...prev, event]);
+          this.events.update((prev: AgentEvent[]) => [...prev, event]);
           this.stopResearch();
         } else {
-          this.events.update(prev => [...prev, event]);
+          this.events.update((prev: AgentEvent[]) => [...prev, event]);
         }
       },
-      error: (err) => {
+      error: (err: Error) => {
         if (err?.name !== 'AbortError') console.error(err);
         this.stopResearch();
       },
@@ -101,37 +99,37 @@ export class App implements OnInit {
     });
   }
 
-  clearAll() {
+  clearAll(): void {
     this.topic.set('');
     this.events.set([]);
     this.finalReport.set(null);
     this.copied.set(false);
   }
 
-  clearHistory() {
+  clearHistory(): void {
     this.history.set([]);
     localStorage.removeItem(HISTORY_KEY);
   }
 
-  saveToHistory(topic: string, report: string) {
+  saveToHistory(topic: string, report: string): void {
     const item: HistoryItem = {
       topic,
       report,
-      date: new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
+      date: new Date().toISOString(),
     };
-    const updated = [item, ...this.history()].slice(0, 10);
+    const updated: HistoryItem[] = [item, ...this.history()].slice(0, 10);
     this.history.set(updated);
     localStorage.setItem(HISTORY_KEY, JSON.stringify(updated));
   }
 
-  loadFromHistory(item: HistoryItem) {
+  loadFromHistory(item: HistoryItem): void {
     this.topic.set(item.topic);
     this.finalReport.set(item.report);
     this.events.set([]);
   }
 
-  copyReport() {
-    const report = this.finalReport();
+  copyReport(): void {
+    const report: string | null = this.finalReport();
     if (!report) return;
     navigator.clipboard.writeText(report).then(() => {
       this.copied.set(true);
@@ -139,15 +137,15 @@ export class App implements OnInit {
     });
   }
 
-  downloadPDF() {
-    const report = this.finalReport();
-    const topic = this.topic();
+  downloadPDF(): void {
+    const report: string | null = this.finalReport();
+    const topic: string = this.topic();
     if (!report) return;
 
-    const doc = new jsPDF({ unit: 'mm', format: 'a4' });
-    const margin = 20;
-    const pageWidth = doc.internal.pageSize.getWidth();
-    const maxWidth = pageWidth - margin * 2;
+    const doc: jsPDF = new jsPDF({ unit: 'mm', format: 'a4' });
+    const margin: number = 20;
+    const pageWidth: number = doc.internal.pageSize.getWidth();
+    const maxWidth: number = pageWidth - margin * 2;
 
     doc.setFont('helvetica', 'bold');
     doc.setFontSize(18);
@@ -161,7 +159,7 @@ export class App implements OnInit {
     doc.setTextColor(0);
     doc.setFontSize(11);
 
-    const lines = doc.splitTextToSize(report, maxWidth);
+    const lines: string[] = doc.splitTextToSize(report, maxWidth);
     doc.text(lines, margin, 50);
 
     doc.save(`${topic.replace(/\s+/g, '_')}_research.pdf`);

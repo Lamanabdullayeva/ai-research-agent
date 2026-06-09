@@ -1,0 +1,18 @@
+<div class="history-panel">
+  <div class="history-header">
+    <p class="section-label">Recent Searches</p>
+    <button class="clear-history-btn" (click)="onClear.emit()" [disabled]="!hasHistory()">
+      Clear
+    </button>
+  </div>
+  <div class="history-items">
+    @for (item of history(); track $index) {
+      <div class="history-item" (click)="onSelect.emit(item)">
+        <span class="history-topic">{{ item.topic }}</span>
+        <span class="history-date">{{ item.date | date:'MMM d, y' }}</span>
+      </div>
+    } @empty {
+      <p class="history-empty">No searches yet</p>
+    }
+  </div>
+</div>

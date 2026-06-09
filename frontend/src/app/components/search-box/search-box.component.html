@@ -1,0 +1,18 @@
+<div class="search-box">
+  <input
+    type="text"
+    [ngModel]="topic()"
+    (ngModelChange)="topicChange.emit($event)"
+    placeholder="Enter a topic to research..."
+    (keyup.enter)="onResearch.emit()"
+    [disabled]="isLoading()"
+  />
+  @if (showClearButton()) {
+    <button class="clear-btn" (click)="onClear.emit()" title="Clear">&#x2715;</button>
+  }
+  @if (isLoading()) {
+    <button class="stop-btn" (click)="onStop.emit()">Stop</button>
+  } @else {
+    <button (click)="onResearch.emit()" [disabled]="!topic().trim()">Research</button>
+  }
+</div>

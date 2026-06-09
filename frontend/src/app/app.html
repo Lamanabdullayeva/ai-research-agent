@@ -5,109 +5,43 @@
   </header>
 
   <main>
-    <!-- Search Input -->
-    <div class="search-box">
-      <input
-        type="text"
-        [ngModel]="topic()"
-        (ngModelChange)="topic.set($event)"
-        placeholder="Enter a topic to research..."
-        (keyup.enter)="startResearch()"
-        [disabled]="isLoading()"
-      />
-      @if (showClearButton()) {
-        <button class="clear-btn" (click)="clearAll()" title="Clear">&#x2715;</button>
-      }
-      @if (isLoading()) {
-        <button class="stop-btn" (click)="stopResearch()">Stop</button>
-      } @else {
-        <button (click)="startResearch()" [disabled]="!topic().trim()">Research</button>
-      }
-    </div>
+    <app-search-box
+      [topic]="topic()"
+      [isLoading]="isLoading()"
+      [showClearButton]="showClearButton()"
+      (topicChange)="topic.set($event)"
+      (onResearch)="startResearch()"
+      (onStop)="stopResearch()"
+      (onClear)="clearAll()"
+    />
 
-    <!-- Two column layout -->
     <div class="columns">
 
-      <!-- Left: Agent Activity + Actions + History -->
       <div class="left-col">
-
         @if (showAgentActivity()) {
-          <div class="trace-panel">
-            <p class="section-label">Agent Activity</p>
-            @for (event of events(); track $index) {
-              <div class="event" [ngClass]="event.type">
-                @if (event.type === 'status') {
-                  <span class="dot status"></span>
-                  <span>{{ event.message }}</span>
-                }
-                @if (event.type === 'tool_call') {
-                  <span class="dot search"></span>
-                  <span>Searching <strong>{{ event.query }}</strong></span>
-                }
-                @if (event.type === 'tool_result') {
-                  <span class="dot result"></span>
-                  <span>Retrieved results for <em>{{ event.query }}</em></span>
-                }
-                @if (event.type === 'error') {
-                  <span class="dot error"></span>
-                  <span>{{ event.message }}</span>
-                }
-              </div>
-            }
-            @if (isLoading()) {
-              <div class="event thinking">
-                <span class="dot pulse"></span>
-                <span>Thinking...</span>
-              </div>
-            }
-            @if (showSearchStats()) {
-              <p class="stats">{{ toolCallCount() }} searches completed</p>
-            }
-          </div>
+          <app-agent-activity
+            [events]="events()"
+            [isLoading]="isLoading()"
+            [toolCallCount]="toolCallCount()"
+            [showSearchStats]="showSearchStats()"
+          />
         }
 
-        @if (showReportActions()) {
-          <div class="actions">
-            <button class="action-btn" (click)="copyReport()">
-              {{ copied() ? 'Copied' : 'Copy Report' }}
-            </button>
-            <button class="action-btn primary" (click)="downloadPDF()">
-              Download PDF
-            </button>
-          </div>
-        }
-
-        <!-- History — always visible -->
-        <div class="history-panel">
-          <div class="history-header">
-            <p class="section-label">Recent Searches</p>
-            <button class="clear-history-btn" (click)="clearHistory()" [disabled]="!hasHistory()">
-              Clear
-            </button>
-          </div>
-          <div class="history-items">
-            @for (item of history(); track $index) {
-              <div class="history-item" (click)="loadFromHistory(item)">
-                <span class="history-topic">{{ item.topic }}</span>
-                <span class="history-date">{{ item.date }}</span>
-              </div>
-            } @empty {
-              <p class="history-empty">No searches yet</p>
-            }
-          </div>
-        </div>
-
+        <app-search-history
+          [history]="history()"
+          [hasHistory]="hasHistory()"
+          (onSelect)="loadFromHistory($event)"
+          (onClear)="clearHistory()"
+        />
       </div>
 
-      <!-- Right: Research Report -->
-      <div class="report" [class.report--filled]="hasReport()">
-        <p class="section-label">Research Report</p>
-        @if (hasReport()) {
-          <div class="report-content">{{ finalReport() }}</div>
-        } @else {
-          <p class="report-placeholder">Report will appear here once the agent finishes researching.</p>
-        }
-      </div>
+      <app-report-panel
+        [report]="finalReport()"
+        [hasReport]="hasReport()"
+        [copied]="copied()"
+        (onCopy)="copyReport()"
+        (onDownloadPdf)="downloadPDF()"
+      />
 
     </div>
   </main>
