@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
+import { API_URL } from '../constants/app.constants';
 
 export interface AgentEvent {
   type: 'status' | 'tool_call' | 'tool_result' | 'final_report' | 'error';
@@ -12,7 +13,7 @@ export interface AgentEvent {
 
 @Injectable({ providedIn: 'root' })
 export class ResearchService {
-  private readonly apiUrl = 'http://127.0.0.1:8000/research';
+  private readonly apiUrl: string = API_URL;
 
   research(topic: string, signal: AbortSignal): Observable<AgentEvent> {
     return new Observable(observer => {

@@ -6,8 +6,14 @@ import { AgentActivityComponent } from './components/agent-activity/agent-activi
 import { ReportPanelComponent } from './components/report-panel/report-panel.component';
 import { SearchHistoryComponent } from './components/search-history/search-history.component';
 import jsPDF from 'jspdf';
-
-const HISTORY_KEY: string = 'research_history';
+import {
+  HISTORY_KEY,
+  MAX_HISTORY_ITEMS,
+  RESEARCH_TIMEOUT_MS,
+  COPIED_RESET_MS,
+  LABEL_EYEBROW,
+  LABEL_HEADING,
+} from './constants/app.constants';
 
 @Component({
   selector: 'app-root',
@@ -27,6 +33,9 @@ export class App implements OnInit {
 
   private abortController: AbortController | null = null;
   private searchTimeout: ReturnType<typeof setTimeout> | null = null;
+
+  protected readonly eyebrow: string = LABEL_EYEBROW;
+  protected readonly heading: string = LABEL_HEADING;
 
   // Derived state — all conditional logic lives here, not in the template
   toolCallCount: Signal<number> = computed(() =>
@@ -75,7 +84,7 @@ export class App implements OnInit {
     this.finalReport.set(null);
     this.copied.set(false);
 
-    this.searchTimeout = setTimeout(() => this.stopResearch(), 60000);
+    this.searchTimeout = setTimeout(() => this.stopResearch(), RESEARCH_TIMEOUT_MS);
 
     this.researchService.research(this.topic(), this.abortController.signal).subscribe({
       next: (event: AgentEvent) => {
@@ -117,7 +126,7 @@ export class App implements OnInit {
       report,
       date: new Date().toISOString(),
     };
-    const updated: HistoryItem[] = [item, ...this.history()].slice(0, 10);
+    const updated: HistoryItem[] = [item, ...this.history()].slice(0, MAX_HISTORY_ITEMS);
     this.history.set(updated);
     localStorage.setItem(HISTORY_KEY, JSON.stringify(updated));
   }
@@ -133,7 +142,7 @@ export class App implements OnInit {
     if (!report) return;
     navigator.clipboard.writeText(report).then(() => {
       this.copied.set(true);
-      setTimeout(() => this.copied.set(false), 2000);
+      setTimeout(() => this.copied.set(false), COPIED_RESET_MS);
     });
   }
 

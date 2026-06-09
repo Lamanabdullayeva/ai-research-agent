@@ -1,8 +1,8 @@
 <div class="history-panel">
   <div class="history-header">
-    <p class="section-label">Recent Searches</p>
+    <p class="section-label">{{ sectionTitle }}</p>
     <button class="clear-history-btn" (click)="onClear.emit()" [disabled]="!hasHistory()">
-      Clear
+      {{ btnClear }}
     </button>
   </div>
   <div class="history-items">
@@ -12,7 +12,7 @@
         <span class="history-date">{{ item.date | date:'MMM d, y' }}</span>
       </div>
     } @empty {
-      <p class="history-empty">No searches yet</p>
+      <p class="history-empty">{{ emptyLabel }}</p>
     }
   </div>
 </div>

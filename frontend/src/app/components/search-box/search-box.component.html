@@ -3,7 +3,7 @@
     type="text"
     [ngModel]="topic()"
     (ngModelChange)="topicChange.emit($event)"
-    placeholder="Enter a topic to research..."
+    [placeholder]="placeholder"
     (keyup.enter)="onResearch.emit()"
     [disabled]="isLoading()"
   />
@@ -11,8 +11,8 @@
     <button class="clear-btn" (click)="onClear.emit()" title="Clear">&#x2715;</button>
   }
   @if (isLoading()) {
-    <button class="stop-btn" (click)="onStop.emit()">Stop</button>
+    <button class="stop-btn" (click)="onStop.emit()">{{ btnStop }}</button>
   } @else {
-    <button (click)="onResearch.emit()" [disabled]="!topic().trim()">Research</button>
+    <button (click)="onResearch.emit()" [disabled]="!topic().trim()">{{ btnResearch }}</button>
   }
 </div>

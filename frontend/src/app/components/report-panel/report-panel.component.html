@@ -1,16 +1,16 @@
 <div class="report" [class.report--filled]="hasReport()">
-  <p class="section-label">Research Report</p>
+  <p class="section-label">{{ sectionTitle }}</p>
   @if (hasReport()) {
     <div class="report-content">{{ report() }}</div>
     <div class="actions">
       <button class="action-btn" (click)="onCopy.emit()">
-        {{ copied() ? 'Copied' : 'Copy Report' }}
+        {{ copied() ? btnCopied : btnCopy }}
       </button>
       <button class="action-btn primary" (click)="onDownloadPdf.emit()">
-        Download PDF
+        {{ btnDownload }}
       </button>
     </div>
   } @else {
-    <p class="report-placeholder">Report will appear here once the agent finishes researching.</p>
+    <p class="report-placeholder">{{ placeholder }}</p>
   }
 </div>
