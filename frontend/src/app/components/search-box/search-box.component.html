@@ -16,3 +16,12 @@
     <button (click)="onResearch.emit()" [disabled]="!topic().trim()">{{ btnResearch }}</button>
   }
 </div>
+
+@if (showSuggestions()) {
+  <div class="suggestions">
+    <span class="suggestions-label">{{ tryLabel }}</span>
+    @for (suggestion of suggestions; track suggestion) {
+      <button class="suggestion-chip" (click)="selectSuggestion(suggestion)">{{ suggestion }}</button>
+    }
+  </div>
+}

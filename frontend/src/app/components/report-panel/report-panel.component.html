@@ -14,7 +14,19 @@
         {{ btnDownload }}
       </button>
     </div>
+  } @else if (isWritingReport()) {
+    <div class="report-loading">
+      <span class="spinner"></span>
+      <p>{{ generatingLabel }}</p>
+    </div>
   } @else {
-    <p class="report-placeholder">{{ placeholder }}</p>
+    <div class="report-placeholder">
+      <svg class="empty-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+        <path d="M14 2v6h6"/>
+        <path d="M9 13h6M9 17h6"/>
+      </svg>
+      <p>{{ placeholder }}</p>
+    </div>
   }
 </div>

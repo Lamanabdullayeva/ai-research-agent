@@ -56,8 +56,8 @@ export class App implements OnInit {
     this.toolCallCount() > 0 && !this.isLoading()
   );
 
-  showThinking: Signal<boolean> = computed(() =>
-    this.isLoading() && this.toolCallCount() < MAX_SEARCHES
+  isWritingReport: Signal<boolean> = computed(() =>
+    this.isLoading() && this.toolCallCount() >= MAX_SEARCHES && !this.finalReport()
   );
 
   hasReport: Signal<boolean> = computed(() => !!this.finalReport());

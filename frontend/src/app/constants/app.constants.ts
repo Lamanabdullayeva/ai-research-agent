@@ -21,10 +21,21 @@ export const LABEL_INPUT_PLACEHOLDER: string = 'Enter a topic to research...';
 export const LABEL_BTN_RESEARCH: string = 'Research';
 export const LABEL_BTN_STOP: string = 'Stop';
 export const LABEL_BTN_CLEAR: string = 'Clear';
+export const LABEL_TRY: string = 'Try:';
+
+// Suggested topics shown as chips before the first search
+export const SUGGESTED_TOPICS: string[] = [
+  'Latest advancements in AI',
+  'Climate change solutions',
+  'History of electronic music',
+  'Future of remote work',
+  'Quantum computing basics',
+];
 
 // UI Labels — Agent Activity
 export const LABEL_SECTION_ACTIVITY: string = 'Agent Activity';
 export const LABEL_THINKING: string = 'Thinking...';
+export const LABEL_WRITING_REPORT: string = 'Writing report...';
 export const LABEL_SEARCHES_COMPLETED: string = 'searches completed';
 export const LABEL_SEARCH_OF: string = 'of';
 
@@ -35,6 +46,7 @@ export const LABEL_EVENT_RETRIEVED: string = 'Retrieved results for:';
 // UI Labels — Report Panel
 export const LABEL_SECTION_REPORT: string = 'Research Report';
 export const LABEL_REPORT_PLACEHOLDER: string = 'Report will appear here once the agent finishes researching.';
+export const LABEL_GENERATING_REPORT: string = 'Generating your research report...';
 export const LABEL_BTN_COPY: string = 'Copy Report';
 export const LABEL_BTN_COPIED: string = 'Copied';
 export const LABEL_BTN_DOWNLOAD_PDF: string = 'Download PDF';

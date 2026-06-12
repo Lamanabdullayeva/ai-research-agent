@@ -3,6 +3,7 @@ import { MarkdownPipe } from '../../pipes/markdown.pipe';
 import {
   LABEL_SECTION_REPORT,
   LABEL_REPORT_PLACEHOLDER,
+  LABEL_GENERATING_REPORT,
   LABEL_BTN_COPY,
   LABEL_BTN_COPIED,
   LABEL_BTN_DOWNLOAD_PDF,
@@ -21,6 +22,7 @@ export class ReportPanelComponent implements OnDestroy {
   report: InputSignal<string | null> = input<string | null>(null);
   hasReport: InputSignal<boolean> = input.required<boolean>();
   copied: InputSignal<boolean> = input.required<boolean>();
+  isWritingReport: InputSignal<boolean> = input.required<boolean>();
 
   onCopy = output<void>();
   onDownloadPdf = output<void>();
@@ -78,6 +80,7 @@ export class ReportPanelComponent implements OnDestroy {
 
   protected readonly sectionTitle: string = LABEL_SECTION_REPORT;
   protected readonly placeholder: string = LABEL_REPORT_PLACEHOLDER;
+  protected readonly generatingLabel: string = LABEL_GENERATING_REPORT;
   protected readonly btnCopy: string = LABEL_BTN_COPY;
   protected readonly btnCopied: string = LABEL_BTN_COPIED;
   protected readonly btnDownload: string = LABEL_BTN_DOWNLOAD_PDF;

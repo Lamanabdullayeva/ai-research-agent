@@ -21,7 +21,7 @@
         @if (showAgentActivity()) {
           <app-agent-activity
             [events]="events()"
-            [isLoading]="showThinking()"
+            [isLoading]="isLoading()"
             [toolCallCount]="toolCallCount()"
             [showSearchStats]="showSearchStats()"
             [maxSearches]="maxSearches"
@@ -40,6 +40,7 @@
         [report]="finalReport()"
         [hasReport]="hasReport()"
         [copied]="copied()"
+        [isWritingReport]="isWritingReport()"
         (onCopy)="copyReport()"
         (onDownloadPdf)="downloadPDF()"
       />

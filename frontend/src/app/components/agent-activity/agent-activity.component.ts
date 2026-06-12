@@ -6,6 +6,7 @@ import { EventLabelPipe } from '../../pipes/event-label.pipe';
 import {
   LABEL_SECTION_ACTIVITY,
   LABEL_THINKING,
+  LABEL_WRITING_REPORT,
   LABEL_SEARCHES_COMPLETED,
   LABEL_SEARCH_OF,
 } from '../../constants/app.constants';
@@ -32,8 +33,12 @@ export class AgentActivityComponent {
     this.isLoading() || this.toolCallCount() > 0
   );
 
+  // While searching show "Thinking...", once all searches are done show "Writing report..."
+  activityLabel: Signal<string> = computed(() =>
+    this.toolCallCount() >= this.maxSearches() ? LABEL_WRITING_REPORT : LABEL_THINKING
+  );
+
   protected readonly sectionTitle: string = LABEL_SECTION_ACTIVITY;
-  protected readonly thinkingLabel: string = LABEL_THINKING;
   protected readonly searchesCompleted: string = LABEL_SEARCHES_COMPLETED;
   protected readonly searchOf: string = LABEL_SEARCH_OF;
 }
