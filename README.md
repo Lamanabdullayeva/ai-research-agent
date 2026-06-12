@@ -2,8 +2,11 @@
 
 A full-stack agentic AI application that autonomously researches any topic: it searches the web, decides what to search next, and produces a structured markdown report — all streamed to the UI in real time.
 
-**Live demo:** _coming soon_
+**Live demo:** [ai-research-agent-three-phi.vercel.app](https://ai-research-agent-three-phi.vercel.app/)
+**Backend API:** [ai-research-agent-api-x0sz.onrender.com](https://ai-research-agent-api-x0sz.onrender.com)
 **Demo video / screenshots:** _coming soon_
+
+> Note: the backend is on Render's free tier and may take ~30-60 seconds to wake up on the first request after inactivity.
 
 ## What It Does
 
