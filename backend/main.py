@@ -12,9 +12,14 @@ load_dotenv()
 
 app = FastAPI()
 
+# Comma-separated list of allowed origins, e.g.
+# CORS_ORIGINS=http://localhost:4200,https://your-frontend.vercel.app
+cors_origins = os.getenv("CORS_ORIGINS", "http://localhost:4200")
+allow_origins = [origin.strip() for origin in cors_origins.split(",")]
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:4200"],
+    allow_origins=allow_origins,
     allow_methods=["*"],
     allow_headers=["*"],
 )
