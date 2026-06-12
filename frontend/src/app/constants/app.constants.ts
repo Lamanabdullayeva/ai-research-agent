@@ -1,3 +1,5 @@
+import { environment } from '../../environments/environment';
+
 // Storage
 export const HISTORY_KEY: string = 'research_history';
 export const MAX_HISTORY_ITEMS: number = 10;
@@ -6,7 +8,7 @@ export const MAX_HISTORY_ITEMS: number = 10;
 export const MAX_SEARCHES: number = 3;
 
 // API
-export const API_URL: string = 'http://127.0.0.1:8000/research';
+export const API_URL: string = environment.apiUrl;
 
 // Timeouts
 export const RESEARCH_TIMEOUT_MS: number = 60000;
