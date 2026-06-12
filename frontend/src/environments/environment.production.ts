@@ -1,5 +1,4 @@
 export const environment = {
   production: true,
-  // TODO: replace with your deployed backend URL once available (e.g. Render)
-  apiUrl: 'https://your-backend.onrender.com/research',
+  apiUrl: 'https://ai-research-agent-api-x0sz.onrender.com/research',
 };
